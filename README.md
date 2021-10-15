@@ -7,11 +7,11 @@ Two PHP pages, one for authentication. The other is for displaying the streams.
 
 ## Previews
 
-<img src="https://raw.githubusercontent.com/Sora012/ome-stream-site/d42c90b3c5fe3eaecd6435c9f185504dbd1ce793/previews/Main%20Preview.png" width=25% height=25%>
+<img src="https://raw.githubusercontent.com/Sora012/ome-stream-site/d42c90b3c5fe3eaecd6435c9f185504dbd1ce793/previews/Main%20Preview.png" width=50% height=50%>
 
-<img src="https://raw.githubusercontent.com/Sora012/ome-stream-site/d42c90b3c5fe3eaecd6435c9f185504dbd1ce793/previews/Live%20Preview.png?raw=true" width=25% height=25%>
+<img src="https://raw.githubusercontent.com/Sora012/ome-stream-site/d42c90b3c5fe3eaecd6435c9f185504dbd1ce793/previews/Live%20Preview.png?raw=true" width=50% height=50%>
 
-<img src="https://raw.githubusercontent.com/Sora012/ome-stream-site/d42c90b3c5fe3eaecd6435c9f185504dbd1ce793/previews/Offline%20Preview.png?raw=true" width=25% height=25%>
+<img src="https://raw.githubusercontent.com/Sora012/ome-stream-site/d42c90b3c5fe3eaecd6435c9f185504dbd1ce793/previews/Offline%20Preview.png?raw=true" width=50% height=50%>
 
 ## Installation
 
