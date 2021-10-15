@@ -1,6 +1,6 @@
 <?php
 /* 
-    Copyright (C) 2021 Katie < https://steamcommunity.com/id/darth_revan/ >
+    Copyright (C) 2021 Katie < https://github.com/Sora012/ome-stream-site >
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published by
@@ -27,7 +27,7 @@ $dbname = "CHANGEME";
 $application = "app";
 $omesecret = "CHANGEME";
 
-function returnJSON($data) {
+function returnJSONEncode($data) {
 	header('Content-Type: application/json; charset=utf-8');
 	return json_encode($data);
 }
@@ -43,35 +43,35 @@ try {
 catch(PDOException $e) {
 	$authResponse['allowed'] = false;
 	$authResponse['reason'] = "Status: Database Failure";
-	echo returnJSON($authResponse);
+	echo returnJSONEncode($authResponse);
 }
 
-if((empty($_POST['client'])) && (empty($_POST['request']))) {
+if((empty($payload['client'])) && (empty($payload['request']))) {
 	$authResponse['allowed'] = false;
 	$authResponse['reason'] = "Status: Empty CLIENT and REQUEST format - Rejecting Stream";
-	echo returnJSON($authResponse);
+	echo returnJSONEncode($authResponse);
 }
 
-if((empty($_POST['client'])) && (empty($_POST['request']))) {
+if((empty($payload['client'])) && (empty($payload['request']))) {
 	$authResponse['allowed'] = false;
 	$authResponse['reason'] = "Status: Empty CLIENT and REQUEST format - Rejecting Stream";
-	echo returnJSON($authResponse);
+	echo returnJSONEncode($authResponse);
 }
 
 $omesig = $_SERVER['HTTP_X_OME_SIGNATURE'];
-if ($omesig == base64url_encode(hash_hmac('sha1', $payload, $omesecret, true)))
+if ($omesig == base64url_encode(hash_hmac('sha1', $initpayload, $omesecret, true)))
 {
-	if($_POST['request']['direction'] == "incoming")
+	if($payload['request']['direction'] == "incoming")
 	{
-		$stream_scheme = preg_replace("/:\/\/.*/", "", $_POST['request']['url']);
+		$stream_scheme = preg_replace("/:\/\/.*/", "", $payload['request']['url']);
 		
-		$stream_host = preg_replace("/.*\/\//", "", $_POST['request']['url']);
+		$stream_host = preg_replace("/.*\/\//", "", $payload['request']['url']);
 		$stream_host = preg_replace("/:.*/", "", $stream_host);
 
-		$stream_port = preg_replace("/.*:/", "", $_POST['request']['url']);
+		$stream_port = preg_replace("/.*:/", "", $payload['request']['url']);
 		$stream_port = preg_replace("/\/".$application.".*/", "", $stream_port);
 		
-		$stream_name = preg_replace("/.*".$application."\//", "", $_POST['request']['url']);
+		$stream_name = preg_replace("/.*".$application."\//", "", $payload['request']['url']);
 		$stream_name = preg_replace("/\/.*/", "", $stream_name);
 		$stream_name = preg_replace("/\?.*/", "", $stream_name);
 		
@@ -86,29 +86,29 @@ if ($omesig == base64url_encode(hash_hmac('sha1', $payload, $omesecret, true)))
 		catch(PDOException $e) {
 			$authResponse['allowed'] = false;
 			$authResponse['reason'] = "Status: Database Failure";
-			echo returnJSON($authResponse);
+			echo returnJSONEncode($authResponse);
 		}
 		
 		if ($stream == $qInfoKeyResults['stream_key']) {
 			$authResponse['new_url'] = $stream_scheme."://".$stream_host.":".$stream_port."/".$application."/".$qInfoKeyResults['username'];
 			$authResponse['allowed'] = true;
-			echo returnJSON($authResponse);
+			echo returnJSONEncode($authResponse);
 		} else {
 			$authResponse['allowed'] = false;
 			$authResponse['reason'] = "Status: Stream Key Mismatch - Rejecting Stream";
-			echo returnJSON($authResponse);
+			echo returnJSONEncode($authResponse);
 		}
 	}
 	
-	if($_POST['request']['direction'] == "outgoing")
+	if($payload['request']['direction'] == "outgoing")
 	{
-		$stream_name = preg_replace("/.*".$application."\//", "", $_POST['request']['url']);
+		$stream_name = preg_replace("/.*".$application."\//", "", $payload['request']['url']);
 		$stream_name = preg_replace("/\/.*/", "", $stream_name);
 		$stream_name = preg_replace("/\?.*/", "", $stream_name);
 		
 		$stream = filter_var($stream_name, FILTER_SANITIZE_STRING);
 		
-		$stream_key = preg_replace("/.*key=/", "", $_POST['request']['url']);
+		$stream_key = preg_replace("/.*key=/", "", $payload['request']['url']);
 		$stream_key = preg_replace("/&.*/", "", $stream_key);
 		$key = filter_var($stream_key, FILTER_SANITIZE_STRING);
 		
@@ -122,14 +122,14 @@ if ($omesig == base64url_encode(hash_hmac('sha1', $payload, $omesecret, true)))
 		{
 			$authResponse['allowed'] = false;
 			$authResponse['reason'] = "Status: Database Failure";
-			echo returnJSON($authResponse);
+			echo returnJSONEncode($authResponse);
 		}
 		
 		if($qInfoResults['private'] == '0')
 		{
 			$authResponse['allowed'] = true;
 			$authResponse['reason'] = "Status: Non-Private - Accepting Stream Playback";
-			echo returnJSON($authResponse);
+			echo returnJSONEncode($authResponse);
 		}
 		elseif($qInfoResults['private'] == '1')
 		{
@@ -137,13 +137,13 @@ if ($omesig == base64url_encode(hash_hmac('sha1', $payload, $omesecret, true)))
 			{
 				$authResponse['allowed'] = true;
 				$authResponse['reason'] = "Status: Private Key Match - Accepting Stream Playback";
-				echo returnJSON($authResponse);
+				echo returnJSONEncode($authResponse);
 			}
 			else
 			{
 				$authResponse['allowed'] = false;
 				$authResponse['reason'] = "Status: Private Key Mismatch - Rejecting Stream Playback";
-				echo returnJSON($authResponse);
+				echo returnJSONEncode($authResponse);
 			}
 		}
 	}
@@ -152,6 +152,6 @@ else
 {
 	$authResponse['allowed'] = false;
 	$authResponse['reason'] = "Status: X-OME-Signature Mismatch - Rejecting Payload";
-	echo returnJSON($authResponse);
+	echo returnJSONEncode($authResponse);
 }
 ?>

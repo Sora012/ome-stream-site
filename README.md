@@ -27,6 +27,8 @@ MySQL (You should install this from your linux distro repository)
 
 Make a backup of Server.xml & Copy the basic Server.xml to its location.
 
+Default location: /usr/share/ovenmediaengine/conf
+
 ### NGINX
 ```
 server  {
@@ -49,6 +51,21 @@ server  {
 ### SQL
 
 Import the SQL file into your database.
+
+Add users.
+
+```
+`username` a display name
+`stream_key` rtmp stream key
+`private` determines if private_key is required
+`private_key` if private=1 this key is required to view the stream
+```
+
+### ome-hook and index
+
+Move ome-hook.php to /var/www/localhost (setup in the NGINX section)
+
+Move index.php to any domain that's configured e.g. /var/www/video_example_com
 
 # Configuration
 

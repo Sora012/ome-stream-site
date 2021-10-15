@@ -119,7 +119,7 @@ if ($dbCheck) { $qInfoResults = db_getuserinfo($dbcon, $stream); } else { $qInfo
 ?>
 
 <!-- 
-    Copyright (C) 2021 Katie < https://steamcommunity.com/id/darth_revan/ >
+    Copyright (C) 2021 Katie < https://github.com/Sora012/ome-stream-site >
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as published by
