@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<Server version="8">
+	<Name>OvenMediaEngine</Name>
+	<!-- Host type (origin/edge) -->
+	<Type>origin</Type>
+	<!-- Specify IP address to bind (* means all IPs) -->
+	<IP>*</IP>
+
+	<StunServer>stun.l.google.com:19302</StunServer>
+
+	<Bind>
+		<Managers>
+			<API>
+				<Port>3329</Port>
+				<TLSPort>3330</TLSPort>
+				<WorkerCount>1</WorkerCount>
+			</API>
+		</Managers>
+
+		<Providers>
+			<RTMP>
+				<Port>1935</Port>
+				<WorkerCount>1</WorkerCount>
+			</RTMP>
+		</Providers>
+
+		<Publishers>
+			<WebRTC>
+				<Signalling>
+					<Port>3333</Port>
+					<!-- If you want to use TLS, specify the TLS port -->
+					<TLSPort>3334</TLSPort>
+					<WorkerCount>4</WorkerCount>
+				</Signalling>
+				<IceCandidates>
+					<TcpRelay>*:3331</TcpRelay>
+					<TcpForce>false</TcpForce>
+					
+					<IceCandidate>*:3332/udp</IceCandidate>
+					<TcpRelayWorkerCount>1</TcpRelayWorkerCount>
+				</IceCandidates>
+			</WebRTC>
+		</Publishers>
+	</Bind>
+
+	<Managers>
+		<Host>
+			<Names>
+				<Name>video.example.com</Name>
+			</Names>
+			<TLS>
+				<CertPath>/etc/letsencrypt/live/video.example.com/cert.pem</CertPath>
+				<KeyPath>/etc/letsencrypt/live/video.example.com/privkey.pem</KeyPath>
+				<ChainCertPath>/etc/letsencrypt/live/video.example.com/chain.pem</ChainCertPath>
+			</TLS>
+		</Host>
+		<API>
+			<AccessToken>CHANGEME</AccessToken>
+		</API>
+	</Managers>
+	
+	<VirtualHosts>
+		<VirtualHost>
+			<Name>video.example.com</Name>
+			<!--Distribution is a value that can be used when grouping the same vhost distributed across multiple servers. This value is output to the events log, so you can use it to aggregate statistics. -->
+			<Distribution>ovenmediaengine.com</Distribution>
+			
+			<Host>
+				<Names>
+					<Name>video.example.com</Name>
+				</Names>
+				<TLS>
+					<CertPath>/etc/letsencrypt/live/video.example.com/cert.pem</CertPath>
+					<KeyPath>/etc/letsencrypt/live/video.example.com/privkey.pem</KeyPath>
+					<ChainCertPath>/etc/letsencrypt/live/video.example.com/chain.pem</ChainCertPath>
+				</TLS>
+			</Host>
+
+			<AdmissionWebhooks>
+				<ControlServerUrl>http://127.0.0.1:80/ome-hook.php</ControlServerUrl>
+				<SecretKey>CHANGEME</SecretKey>
+				<Timeout>3000</Timeout>
+				<Enables>
+					<Providers>rtmp,webrtc,srt</Providers>
+					<Publishers>webrtc,hls,dash,lldash</Publishers>
+				</Enables>
+			</AdmissionWebhooks>
+
+			<!-- Settings for applications -->
+			<Applications>
+				<Application>
+					<Name>app</Name>
+					<Type>live</Type>
+					<OutputProfiles>
+						<!-- Enable this configuration if you want to hardware acceleration using GPU -->
+						<!-- <HardwareAcceleration>false</HardwareAcceleration>	-->
+						<OutputProfile>
+							<Name>bypass_stream</Name>
+							<OutputStreamName>${OriginStreamName}</OutputStreamName>
+							<Encodes>
+								<Audio>
+									<Bypass>false</Bypass>
+									<Codec>opus</Codec>
+									<Bitrate>128000</Bitrate>
+									<Samplerate>48000</Samplerate>
+									<Channel>2</Channel>
+								</Audio>
+								<Video>
+									<Bypass>true</Bypass>
+									<Codec>vp8</Codec>
+									<Bitrate>1024000</Bitrate>
+									<Framerate>30</Framerate>
+									<Width>1280</Width>
+									<Height>720</Height>
+								</Video>
+							</Encodes>
+						</OutputProfile>
+					</OutputProfiles>
+					<Providers>
+						<RTMP>
+							<BlockDuplicateStreamName>true</BlockDuplicateStreamName>
+						</RTMP>
+					</Providers>
+					<Publishers>
+						<AppWorkerCount>1</AppWorkerCount>
+						<StreamWorkerCount>8</StreamWorkerCount>
+						<WebRTC>
+							<Timeout>30000</Timeout>
+							<Rtx>false</Rtx>
+							<Ulpfec>false</Ulpfec>
+							<JitterBuffer>false</JitterBuffer>
+						</WebRTC>
+					</Publishers>
+				</Application>
+			</Applications>
+		</VirtualHost>
+	</VirtualHosts>
+</Server>
